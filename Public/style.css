@@ -1,0 +1,35 @@
+*, *::after, *::before {
+    margin: 0;
+    padding: 0;
+}
+
+.auth-container  {
+    display: flex;
+    justify-content: center;
+}
+
+.authentication {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth {
+    background-color: rgb(106, 104, 252);
+    border: 4px solid black;
+    padding: 2rem;
+    margin: 0.1rem;
+}
+
+.submit {
+    padding: 0 0.5rem;
+}
+
+.gg {
+    margin: 0 auto;
+}
+
+.text {
+    border: 1px solid black;
+}
