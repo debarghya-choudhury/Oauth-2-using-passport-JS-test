@@ -4,6 +4,7 @@ const session = require('express-session')
 const passport = require('passport')
 require('./auth')
 
+
 // Middleware
 
 function isLoggedin(req, res, next) {
@@ -12,7 +13,7 @@ function isLoggedin(req, res, next) {
 
 const app = express()
 app.use(session({
-    secret: 'cats'
+    secret: 'authentication'
 }))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -23,6 +24,10 @@ app.use(express.urlencoded({
 }))
 app.use(express.json())
 
+
+app.get('/', (req, res) => {
+    res.redirect('/login.html')
+})
 
 app.post('/login.html', (req, res) => {
     console.log(req.body)
@@ -40,9 +45,10 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback',
     passport.authenticate('google', {
-        successRedirect: '/protected',
-        failureRedirect: '/auth/failure'
-    })
+            successRedirect: '/check-auth',
+            failureRedirect: '/auth/failure'
+        }
+    )
 )
 
 app.get('auth/failure', (req, res) => {
@@ -52,19 +58,34 @@ app.get('auth/failure', (req, res) => {
     })
 })
 
-app.get('/protected', isLoggedin, (req, res) => {
-    res.sendFile(__dirname + '/public/authSucc.html')
+// Checking if the login is from admin or user, then redirecting to their specific urls
+app.get('/check-auth', (req, res) => {
+    console.log(req.user)
+    if (req.user && req.user.role === "admin") {
+        res.redirect('/admin-only-route')
+    } else {
+        res.redirect('/users-route')
+    }
+})
+
+app.get('/admin-only-route', isLoggedin, (req, res) => {
+    res.sendFile(__dirname + '/public/admin-only-route.html')
+    // res.send("Access Granted")
+})
+
+app.get('/users-route', isLoggedin, (req, res) => {
+    res.sendFile(__dirname + '/public/users-route.html')
     // res.send("Access Granted")
 })
 
 app.get('/logout', (req, res) => {
-    req.logout(function (err) { 
+    req.logout(function (err) {
         if (err) {
             return next(err);
-        } 
+        }
         res.send('<html>You have successfully been logged out. Click <a href="/login.html">here</a> to go back to the login page.</html>')
     });
-    
+
 })
 
 app.get('*', (req, res) => {
@@ -72,5 +93,5 @@ app.get('*', (req, res) => {
 })
 
 app.listen(process.env.PORT, () => {
-    console.log('server is running at http://localhost/login.html', process.env.PORT)
+    console.log('server is running at http://localhost/')
 })

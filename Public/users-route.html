@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users-only</title>
+</head>
+<body>
+    <h1>Welcome User</h1>
+    <a href="/logout">logout</a><br><br><hr><br>
+    <form action= "/user-get" method= "GET">
+        <button type="submit">GET DATA</button>
+    </form>
+
+    <form action="/user-post" method= "POST">
+        <p><label for="user-data">Review of W3Schools:</label></p>
+        <textarea id="user-data" name="data" rows="4" cols="50" placeholder="Add the data you want to POST"></textarea>
+        <br>
+        <button type="submit">POST DATA</button>
+    </form>
+</body>
+</html>
