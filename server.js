@@ -78,6 +78,14 @@ app.get('/users-route', isLoggedin, (req, res) => {
     // res.send("Access Granted")
 })
 
+app.get('/users-get', isLoggedin, (req, res) => {
+    res.status(200).send('users-get route working')
+})
+
+app.post('/users-post', isLoggedin, (req, res) => {
+    res.status(200).send('users-post route working')
+})
+
 app.get('/logout', (req, res) => {
     req.logout(function (err) {
         if (err) {

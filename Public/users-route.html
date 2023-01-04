@@ -9,12 +9,12 @@
 <body>
     <h1>Welcome User</h1>
     <a href="/logout">logout</a><br><br><hr><br>
-    <form action= "/user-get" method= "GET">
+    <form action= "/users-get" method= "GET">
         <button type="submit">GET DATA</button>
-    </form>
+    </form><br>
 
-    <form action="/user-post" method= "POST">
-        <p><label for="user-data">Review of W3Schools:</label></p>
+    <form action="/users-post" method= "POST">
+        <p><label for="user-data">Data you want to store:</label></p>
         <textarea id="user-data" name="data" rows="4" cols="50" placeholder="Add the data you want to POST"></textarea>
         <br>
         <button type="submit">POST DATA</button>
