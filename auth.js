@@ -65,11 +65,11 @@ passport.use(
                         email: profile._json.email,
                         email_verified: profile._json.email_verified,
                         role: profile.role,
-                    });
+                    })
                     newUser.save((err) => {
                         if (err) return cb(err);
                         return done(null, newUser);
-                    });
+                    })
                     console.log(newUser)
                     console.log("newUser has been added")
                 }
@@ -80,14 +80,14 @@ passport.use(
 
 passport.serializeUser((user, cb) => {
     // This function is called when the user object needs to be serialized (e.g. for storing in a session)
-    cb(null, user.id);
+    cb(null, user.id)
 });
 
 passport.deserializeUser((id, cb) => {
     // This function is called when the user object needs to be deserialized (e.g. for retrieving from a session)
     User.findById(id, (err, user) => {
         if (err) return cb(err);
-        cb(null, user);
+        cb(null, user)
     });
 });
 

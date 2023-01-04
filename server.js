@@ -60,7 +60,7 @@ app.get('auth/failure', (req, res) => {
 
 // Checking if the login is from admin or user, then redirecting to their specific urls
 app.get('/check-auth', (req, res) => {
-    console.log(req.user)
+    // console.log(req.user)
     if (req.user && req.user.role === "admin") {
         res.redirect('/admin-only-route')
     } else {
