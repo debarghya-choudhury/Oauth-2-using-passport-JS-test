@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 
 app.post('/login.html', (req, res) => {
     console.log(req.body)
-    res.status(200).send('Nice Bitch')
+    res.status(200).send('Success')
 })
 
 // Adding PassportJS Authentication :-
@@ -50,10 +50,9 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback',
     passport.authenticate('google', {
-            successRedirect: '/check-auth',
-            failureRedirect: '/auth/failure'
-        }
-    )
+        successRedirect: '/check-auth',
+        failureRedirect: '/auth/failure'
+    })
 )
 
 app.get('auth/failure', (req, res) => {
@@ -74,24 +73,39 @@ app.get('/check-auth', (req, res) => {
 })
 
 app.get('/admin-only-route', isLoggedin, (req, res) => {
-    res.sendFile(__dirname + '/public/admin-only-route.html')
+    if (req.user && req.user.role === "admin") {
+        res.sendFile(__dirname + '/public/admin-only-route.html')
+    } else {
+        res.send('Unauthorized')
+    }
+
     // res.send("Access Granted")
 })
 
 app.get('/users-route', isLoggedin, (req, res) => {
-    res.sendFile(__dirname + '/public/users-route.html')
+    if (req.user && req.user.role === "User") {
+        res.sendFile(__dirname + '/public/users-route.html')
+    } else {
+        res.send('Unauthorized')
+    }
     // res.send("Access Granted")
 })
 
+// USER METHODS :-
 app.get('/users-get', isLoggedin, async (req, res) => {
     try {
-        const fetchedData = await User.find( { google_id: req.user.google_id }, { name: 1, data: 1 } )
+        const fetchedData = await User.find({
+            google_id: req.user.google_id
+        }, {
+            name: 1,
+            data: 1
+        })
         res.status(200).json({
             success: true,
             data: {
                 fetchedData
             }
-        })        
+        })
     } catch (error) {
         res.status(400).json({
             status: 'failure',
@@ -102,8 +116,16 @@ app.get('/users-get', isLoggedin, async (req, res) => {
 
 app.post('/users-post', isLoggedin, async (req, res) => {
     try {
-        let { data } = req.body
-        let singedUser = await User.updateOne({ google_id: req.user.google_id }, { $push: { data: data }})
+        let {
+            data
+        } = req.body
+        let singedUser = await User.updateOne({
+            google_id: req.user.google_id
+        }, {
+            $push: {
+                data: data
+            }
+        })
         // res.status(200).send('successfully posted')
         res.status(201).redirect('/users-route')
     } catch (error) {
@@ -114,15 +136,19 @@ app.post('/users-post', isLoggedin, async (req, res) => {
     }
 })
 
+// ADMIN METHODS :- 
 app.get('/admin-get', isLoggedin, async (req, res) => {
     try {
-        const fetchedData = await User.find( {} , { name: 1, data: 1 } )
+        const fetchedData = await User.find({}, {
+            name: 1,
+            data: 1
+        })
         res.status(200).json({
             success: true,
             data: {
                 fetchedData
             }
-        })        
+        })
     } catch (error) {
         res.status(400).json({
             status: 'failure',
@@ -131,41 +157,64 @@ app.get('/admin-get', isLoggedin, async (req, res) => {
     }
 })
 
-// Yet to be done
-// app.post('/admin-post', isLoggedin, async (req, res) => {
-//     try {
-//         const fetchedData = await User.find( {} , { name: 1, data: 1 } )
-//         res.status(200).json({
-//             success: true,
-//             data: {
-//                 fetchedData
-//             }
-//         })        
-//     } catch (error) {
-//         res.status(400).json({
-//             status: 'failure',
-//             message: 404
-//         })
-//     }
-// })
+app.post('/admin-post', isLoggedin, async (req, res) => {
+    try {
+        let {
+            name,
+            data,
+            method
+        } = req.body
+        console.log(name, data, method)
+        if (method === 'post') {
+            // POST request
+            let searchedUser = await User.updateOne({
+                name: name
+            }, {
+                $push: {
+                    data: data
+                }
+            })
+            console.log(searchedUser)
+            if (searchedUser.matchedCount === 0) {
+                return res.sendStatus(404)
+            }
+            return res.status(201).redirect('/admin-only-route')
 
-//yet to be done
-// app.delete('/admin-delete', isLoggedin, async (req, res) => {
-//     try {
-//         const fetchedData = await User.find( {} , { name: 1, data: 1 } )
-//         res.status(200).json({
-//             success: true,
-//             data: {
-//                 fetchedData
-//             }
-//         })        
-//     } catch (error) {
-//         res.status(400).json({
-//             status: 'failure',
-//             message: 404
-//         })
-//     }
-// })
+        } else if (method === 'update') {
+            // UPDATE request
+            let searchedUser = await User.updateOne({
+                name: name
+            }, {
+                $set: {
+                    data: data
+                }
+            })
+            console.log(searchedUser)
+            if (searchedUser.matchedCount === 0) {
+                return res.sendStatus(404)
+            }
+            return res.status(201).redirect('/admin-only-route')
+
+        } else if (method === 'delete') {
+            // Delete the User itself from collection
+            let searchedUser = await User.deleteOne({
+                name: name
+            })
+            console.log(searchedUser)
+            if (searchedUser.deletedCount === 0) {
+                return res.sendStatus(404)
+            }
+            return res.status(201).redirect('/admin-only-route')
+        }
+        // res.send('success')
+    } catch (error) {
+        res.status(400).json({
+            status: 'failure',
+            message: 'Something went wrong...'
+        })
+    }
+})
+
 
 app.get('/logout', (req, res) => {
     req.logout(function (err) {

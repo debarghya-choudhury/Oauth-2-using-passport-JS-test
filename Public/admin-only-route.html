@@ -34,14 +34,25 @@
             <td class="name-col">N/A</td>
             <td class="data-col">N/A</td>
         </tr>
-    </table>
+    </table><br><br>
 
     <form class="post-form" action="/admin-post" method="POST">
-        
-        <p><label for="user-data">Data you want to store:</label></p>
-        <textarea id="user-data" name="data" rows="4" cols="50" placeholder="Add the data you want to POST"></textarea>
+        <label for="name">Name:</label><br>
+        <input type="text" name="name" id="name" placeholder="Username" required><br>
+        <label for="user-data">Data:</label><br>
+        <textarea id="user-data" name="data" rows="4" cols="50" placeholder="Add the data you want to Submit"></textarea>
         <br>
-        <button class="post-data-btn" type="submit">POST DATA</button>
+        <input type="radio" id="post" name="method" value="post">
+        <label for="post">Post</label>
+        <br>
+        <input type="radio" id="update" name="method" value="update">
+        <label for="update">Update</label>
+        <br>
+        <input type="radio" id="delete" name="method" value="delete">
+        <label for="delete">Delete</label>
+        <br>
+        <br>
+        <button class="post-data-btn" type="submit">SUBMIT</button>
     </form><br>
 
     <script>
