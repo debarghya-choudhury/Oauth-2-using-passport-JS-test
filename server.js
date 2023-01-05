@@ -4,6 +4,11 @@ const session = require('express-session')
 const passport = require('passport')
 require('./auth')
 
+// requiring module
+const User = require('./model/usermodel')
+
+
+// view
 
 // Middleware
 
@@ -78,13 +83,89 @@ app.get('/users-route', isLoggedin, (req, res) => {
     // res.send("Access Granted")
 })
 
-app.get('/users-get', isLoggedin, (req, res) => {
-    res.status(200).send('users-get route working')
+app.get('/users-get', isLoggedin, async (req, res) => {
+    try {
+        const fetchedData = await User.find( { google_id: req.user.google_id }, { name: 1, data: 1 } )
+        res.status(200).json({
+            success: true,
+            data: {
+                fetchedData
+            }
+        })        
+    } catch (error) {
+        res.status(400).json({
+            status: 'failure',
+            message: 404
+        })
+    }
 })
 
-app.post('/users-post', isLoggedin, (req, res) => {
-    res.status(200).send('users-post route working')
+app.post('/users-post', isLoggedin, async (req, res) => {
+    try {
+        let { data } = req.body
+        let singedUser = await User.updateOne({ google_id: req.user.google_id }, { $push: { data: data }})
+        // res.status(200).send('successfully posted')
+        res.status(201).redirect('/users-route')
+    } catch (error) {
+        res.status(400).json({
+            status: 'failure',
+            message: 'Something went wrong...'
+        })
+    }
 })
+
+app.get('/admin-get', isLoggedin, async (req, res) => {
+    try {
+        const fetchedData = await User.find( {} , { name: 1, data: 1 } )
+        res.status(200).json({
+            success: true,
+            data: {
+                fetchedData
+            }
+        })        
+    } catch (error) {
+        res.status(400).json({
+            status: 'failure',
+            message: 404
+        })
+    }
+})
+
+// Yet to be done
+// app.post('/admin-post', isLoggedin, async (req, res) => {
+//     try {
+//         const fetchedData = await User.find( {} , { name: 1, data: 1 } )
+//         res.status(200).json({
+//             success: true,
+//             data: {
+//                 fetchedData
+//             }
+//         })        
+//     } catch (error) {
+//         res.status(400).json({
+//             status: 'failure',
+//             message: 404
+//         })
+//     }
+// })
+
+//yet to be done
+// app.delete('/admin-delete', isLoggedin, async (req, res) => {
+//     try {
+//         const fetchedData = await User.find( {} , { name: 1, data: 1 } )
+//         res.status(200).json({
+//             success: true,
+//             data: {
+//                 fetchedData
+//             }
+//         })        
+//     } catch (error) {
+//         res.status(400).json({
+//             status: 'failure',
+//             message: 404
+//         })
+//     }
+// })
 
 app.get('/logout', (req, res) => {
     req.logout(function (err) {

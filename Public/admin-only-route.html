@@ -5,9 +5,75 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admins-only</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome Admin</h1>
     <a href="/logout">logout</a>
+    <hr><br>
+    <form class="get-form" action="/admin-get" method="GET">
+        <button type="submit">GET DATA</button>
+    </form><br>
+
+    <table class="dataTable">
+        <tr>
+            <th>Name</th>
+            <th>Data</th>
+        </tr>
+        <tr class="user-row">
+            <td class="name-col">N/A</td>
+            <td class="data-col">N/A</td>
+        </tr>
+    </table>
+
+    <form class="post-form" action="/admin-post" method="POST">
+        
+        <p><label for="user-data">Data you want to store:</label></p>
+        <textarea id="user-data" name="data" rows="4" cols="50" placeholder="Add the data you want to POST"></textarea>
+        <br>
+        <button class="post-data-btn" type="submit">POST DATA</button>
+    </form><br>
+
+    <script>
+        const get_form = document.querySelector('.get-form')
+        const post_form = document.querySelector('.post-form')
+        const dataTable = document.querySelector('.dataTable')
+        const get_data_btn = document.querySelector('.get-data-btn')
+        // const post_data_btn = document.querySelector('.post-data-btn')
+        const user_row = document.querySelector('.user-row')
+
+        let counter = 0
+
+        get_form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            counter++
+            console.log(counter)
+            if (counter === 1) {
+                fetch('/admin-get')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        const dataArr = [...data.data.fetchedData]
+                        user_row.classList.add('hidden')
+                        dataArr.map(user => {
+                            const tr = document.createElement('tr')
+                            tr.innerHTML = `<td>${user.name}</td>
+                        <td>${user.data}</td>`
+                            dataTable.append(tr)
+                        })
+                    });
+            }
+        })
+    </script>
 </body>
 </html>

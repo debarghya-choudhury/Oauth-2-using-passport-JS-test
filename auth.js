@@ -4,40 +4,12 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 // Connecting to DATABASE :-
-mongoose.connect('mongodb://localhost:27017/auth-api', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
+mongoose.connect('mongodb://localhost:27017/auth-api').then(() => {
     console.log("DB Connected")
 }).catch(err => console.log(err))
 
-
-// Making a schema :=
-const userSchema = mongoose.Schema({
-    google_id: {
-        type: String,
-        unique: true,
-    },
-    name: String,
-    picture: String,
-    email: String,
-    email_verified: {
-        type: Boolean,
-        default: false
-    },
-    role: {
-        type: String,
-        default: 'User'
-    },
-    data: {
-        type: String,
-        default: "null",
-    },
-});
-
-// Making the user model out of the Schema :-
-const User = mongoose.model("user", userSchema, "users"); // Naming the collections as "users" in the 3rd argument
-
+// requiring module
+const User = require('./model/usermodel')
 
 passport.use(
     new GoogleStrategy({
