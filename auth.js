@@ -3,9 +3,17 @@ const mongoose = require('mongoose')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
-// Connecting to DATABASE :-
-mongoose.connect('mongodb://localhost:27017/auth-api').then(() => {
-    console.log("DB Connected")
+// Connecting to LOCAL DATABASE for Testing:-
+// mongoose.connect('mongodb://localhost:27017/auth-api').then(() => {
+//     console.log("DB Connected")
+// }).catch(err => console.log(err))
+
+// Connecting to CLOUD DATABASE Atlas:-
+const DB = process.env.DATABASE.replace('<password>', process.env.DATABASE_PASSWORD)
+
+mongoose.connect(DB).then(con => {
+    // console.log(con.connections)
+    console.log('DB connection successful!')
 }).catch(err => console.log(err))
 
 // requiring module
